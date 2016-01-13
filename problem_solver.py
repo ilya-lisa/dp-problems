@@ -63,8 +63,10 @@ class Field:
     @staticmethod
     def solve2(x_field):
         solutions = []
-
-
+        for direction in x_field.get_allowed_moves():
+            solution = Field.solve(x_field)
+            if solution > 0:
+                solutions.append(solution)
         return min(solutions) if len(solutions) > 0 else -1
 
 
