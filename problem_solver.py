@@ -49,15 +49,21 @@ class Field:
         return free_directions
 
     @staticmethod
-    def solve2(x_field):
-        solutions = []
-        for direction in sorted(x_field.get_allowed_moves(), reverse=True):
+    def solve(x_field):
+        for direction in x_field.get_allowed_moves():
             field = Field(x_field.roads, x_field.person_pos)
             field.make_a_move(direction)
             if field.person_pos >= Field.NUMBER_OF_ROADS:
-                solutions.append(field.move_counter + x_field.move_counter)
+                return field.move_counter + x_field.move_counter
             else:
-                solutions.append(Field.solve2(field) + field.move_counter)
+                return Field.solve(field) + field.move_counter
+        return SOLUTION_DOESNT_EXIST
+
+
+    @staticmethod
+    def solve2(x_field):
+        solutions = []
+
 
         return min(solutions) if len(solutions) > 0 else -1
 
