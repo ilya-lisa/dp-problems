@@ -1,15 +1,17 @@
+SOLUTION_DOESNT_EXIST = -1
+
 class Field:
     NUMBER_OF_ROADS = 11
     FIRST_ROAD_SPEED = 5
     FIRST_ROAD_DISTANCE = 18
 
-    def __init__(self, car_positions):
+    def __init__(self, car_positions, person_pos = 0):
         super().__init__()
         self.roads = []
         for ndx in range(Field.NUMBER_OF_ROADS):
             pos = car_positions[ndx] if len(car_positions) > ndx else 0
             self.roads.append(pos)
-        self.person_pos = 0
+        self.person_pos = person_pos
         self.move_counter = 0
 
     def make_a_move(self, direction):
@@ -36,54 +38,41 @@ class Field:
     def __str__(self):
         return ' '.join(str(pos) for pos in self.roads)
 
-    def solve(self, direction):
-        while self.person_pos < Field.NUMBER_OF_ROADS:
-            if not self.is_hit_on_next(self.person_pos + 1):
-                self.make_a_move(1)
-            elif not field.is_hit_on_next(self.person_pos):
-                self.make_a_move(0)
+    def get_allowed_moves(self):
+        free_directions = []
+        if not self.is_hit_on_next(self.person_pos + 1):
+            free_directions.append(1)
+        if not self.is_hit_on_next(self.person_pos):
+            free_directions.append(0)
+        if not self.is_hit_on_next(self.person_pos -1):
+            free_directions.append(-1)
+        return free_directions
+
+    # def solve(self, direction):
+    #     if self.person_pos >= Field.NUMBER_OF_ROADS:
+    #         return 0
+    #     self.make_a_move(direction)
+    #     return self.solve2()
+
+    @staticmethod
+    def solve2(x_field):
+        solutions = []
+        for direction in x_field.get_allowed_moves():
+            field = Field(x_field.roads, x_field.person_pos)
+            field.make_a_move(direction)
+            if field.person_pos >= Field.NUMBER_OF_ROADS:
+                solutions.append(field.move_counter)
             else:
-                if field.is_hit_on_next(self.person_pos - 1):
-                    return SOLUTION_DOESNT_EXIST
-                field.make_a_move(-1)
+                solutions.append(Field.solve2(field) + field.move_counter)
 
-
-
-
-SOLUTION_DOESNT_EXIST = -1
-
-
-def get_allowed_moves(field):
-    free_directions = []
-    if not field.is_hit_on_next(field.person_pos + 1):
-        free_directions.append(1)
-    if not field.is_hit_on_next(field.person_pos):
-        free_directions.append(0)
-    if not field.is_hit_on_next(field.person_pos -1):
-        free_directions.append(-1)
-    return free_directions
+        return min(solutions) if len(solutions) > 0 else -1
 
 
 if __name__ == '__main__':
-    with open('/home/ipatrikeev/dev/code_abbey/input.txt') as f:
+    with open('W:\\input.txt') as f:
         case_number = int(f.readline())
         for round in range(case_number):
             car_positions = [int(pos) for pos in f.readline().split()]
             field = Field(car_positions)
-            try:
-                while field.person_pos < Field.NUMBER_OF_ROADS:
-                    if get_allowed_moves(field):
-                        print('more than 1 way!')
 
-                    if not field.is_hit_on_next(field.person_pos + 1):
-                        field.make_a_move(1)
-                    elif not field.is_hit_on_next(field.person_pos):
-                        field.make_a_move(0)
-                    else:
-                        if field.is_hit_on_next(field.person_pos - 1):
-                            field.move_counter = SOLUTION_DOESNT_EXIST
-                            break
-                        field.make_a_move(-1)
-            except ValueError:
-                pass
-            print(field.move_counter, end=' ')
+            print(Field.solve2(field), end=' ')
