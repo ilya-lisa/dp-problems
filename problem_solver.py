@@ -12,7 +12,7 @@ class Field:
         self.person_pos = 0
         self.move_counter = 0
 
-    def make_move(self, direction):
+    def make_a_move(self, direction):
         self.person_pos += direction
         self.move_counter += 1
         # move cars
@@ -39,13 +39,13 @@ class Field:
     def solve(self, direction):
         while self.person_pos < Field.NUMBER_OF_ROADS:
             if not self.is_hit_on_next(self.person_pos + 1):
-                self.make_move(1)
+                self.make_a_move(1)
             elif not field.is_hit_on_next(self.person_pos):
-                self.make_move(0)
+                self.make_a_move(0)
             else:
                 if field.is_hit_on_next(self.person_pos - 1):
                     return SOLUTION_DOESNT_EXIST
-                field.make_move(-1)
+                field.make_a_move(-1)
 
 
 
@@ -53,15 +53,15 @@ class Field:
 SOLUTION_DOESNT_EXIST = -1
 
 
-def has_more_than_one_way(field):
-    result = 0
+def get_allowed_moves(field):
+    free_directions = []
     if not field.is_hit_on_next(field.person_pos + 1):
-        result += 1
+        free_directions.append(1)
     if not field.is_hit_on_next(field.person_pos):
-        result += 1
+        free_directions.append(0)
     if not field.is_hit_on_next(field.person_pos -1):
-        result += 1
-    return True if result > 1 else False
+        free_directions.append(-1)
+    return free_directions
 
 
 if __name__ == '__main__':
@@ -72,18 +72,18 @@ if __name__ == '__main__':
             field = Field(car_positions)
             try:
                 while field.person_pos < Field.NUMBER_OF_ROADS:
-                    if has_more_than_one_way(field):
+                    if get_allowed_moves(field):
                         print('more than 1 way!')
 
                     if not field.is_hit_on_next(field.person_pos + 1):
-                        field.make_move(1)
+                        field.make_a_move(1)
                     elif not field.is_hit_on_next(field.person_pos):
-                        field.make_move(0)
+                        field.make_a_move(0)
                     else:
                         if field.is_hit_on_next(field.person_pos - 1):
                             field.move_counter = SOLUTION_DOESNT_EXIST
                             break
-                        field.make_move(-1)
+                        field.make_a_move(-1)
             except ValueError:
                 pass
             print(field.move_counter, end=' ')
