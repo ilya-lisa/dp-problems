@@ -29,7 +29,7 @@ class Field:
             distance += 1
 
     def is_hit_on_next(self, road_number):
-        return (road_number >= Field.NUMBER_OF_ROADS) or (self.roads[road_number] - Field.speed_of(road_number) <= 0)
+        return (road_number < 0) or (road_number < Field.NUMBER_OF_ROADS and (self.roads[road_number] - Field.speed_of(road_number) <= 0))
 
     @staticmethod
     def speed_of(road_number):
@@ -48,20 +48,14 @@ class Field:
             free_directions.append(-1)
         return free_directions
 
-    # def solve(self, direction):
-    #     if self.person_pos >= Field.NUMBER_OF_ROADS:
-    #         return 0
-    #     self.make_a_move(direction)
-    #     return self.solve2()
-
     @staticmethod
     def solve2(x_field):
         solutions = []
-        for direction in x_field.get_allowed_moves():
+        for direction in sorted(x_field.get_allowed_moves(), reverse=True):
             field = Field(x_field.roads, x_field.person_pos)
             field.make_a_move(direction)
             if field.person_pos >= Field.NUMBER_OF_ROADS:
-                solutions.append(field.move_counter)
+                solutions.append(field.move_counter + x_field.move_counter)
             else:
                 solutions.append(Field.solve2(field) + field.move_counter)
 
