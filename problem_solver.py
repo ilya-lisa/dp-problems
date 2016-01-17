@@ -42,7 +42,7 @@ class Field:
         for ndx in range(Field.NUMBER_OF_ROADS):
             pos = car_positions[ndx] if len(car_positions) > ndx else 0
             self.roads.append(pos)
-        self.solvers = []
+        self.solvers = self.generate_new_solvers(0)
 
     def make_a_move(self):
         for solver in self.solvers:
@@ -64,7 +64,7 @@ class Field:
 
     @staticmethod
     def speed_of(road_number):
-        return Field.FIRST_ROAD_SPEED + road_number - 1
+        return Field.FIRST_ROAD_SPEED + road_number
 
     def __str__(self):
         return ' '.join(str(pos) for pos in self.roads)
@@ -79,17 +79,22 @@ class Field:
             free_directions.append(-1)
         return free_directions
 
+    def generate_new_solvers(self, person_pos):
+        new_solvers = set()
+        for possible_move in self.get_allowed_moves(person_pos):
+            new_solvers.add(Solver(possible_move, person_pos))
+        return new_solvers
+
     @staticmethod
     def solve_with_solvers(x_field):
-        new_solvers = set()
         iteration = 1
+        new_solvers = set()
         while True:
             x_field.make_a_move()
             for solver in x_field.solvers:
                 if solver.person_pos >= Field.NUMBER_OF_ROADS:
                     return iteration
-                for possible_move in x_field.get_allowed_moves(solver.person_pos):
-                    new_solvers.add(Solver(possible_move, solver.person_pos))
+                new_solvers.update(x_field.generate_new_solvers(solver.person_pos))
 
             if len(new_solvers) == 0:
                 return SOLUTION_DOESNT_EXIST
@@ -105,5 +110,4 @@ if __name__ == '__main__':
         for round in range(case_number):
             car_positions = [int(pos) for pos in f.readline().split()]
             field = Field(car_positions)
-            field.solvers = [Solver(1)]
             print(Field.solve_with_solvers(field), end=' ')
