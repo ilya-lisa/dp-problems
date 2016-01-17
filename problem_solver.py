@@ -55,9 +55,7 @@ class Field:
             distance += 1
 
     def is_hit_on_next(self, road_number):
-        return (road_number < 0) or (
-            road_number < Field.NUMBER_OF_ROADS and (
-                self.roads[road_number] >= 0 >= Field.speed_of(road_number) - self.roads[road_number]))
+        return (road_number < 0) or (road_number < Field.NUMBER_OF_ROADS and (self.roads[road_number] >= 0 and self.roads[road_number] - Field.speed_of(road_number) <= 0))
 
     @staticmethod
     def speed_of(road_number):
