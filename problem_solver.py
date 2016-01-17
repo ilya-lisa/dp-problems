@@ -29,9 +29,6 @@ class Solver:
 
 
 class Field:
-    the_solution = 999999
-    entries = 0
-    ways = 0
     NUMBER_OF_ROADS = 11
     FIRST_ROAD_SPEED = 5
     FIRST_ROAD_DISTANCE = 18
@@ -54,20 +51,17 @@ class Field:
             self.roads[ndx] -= speed
             if self.roads[ndx] < 0:
                 self.roads[ndx] += distance
-
             speed += 1
             distance += 1
 
     def is_hit_on_next(self, road_number):
         return (road_number < 0) or (
-            road_number < Field.NUMBER_OF_ROADS and (self.roads[road_number] >= 0 and self.roads[road_number] - Field.speed_of(road_number) <= 0))
+            road_number < Field.NUMBER_OF_ROADS and (
+                self.roads[road_number] >= 0 >= Field.speed_of(road_number) - self.roads[road_number]))
 
     @staticmethod
     def speed_of(road_number):
         return Field.FIRST_ROAD_SPEED + road_number
-
-    def __str__(self):
-        return ' '.join(str(pos) for pos in self.roads)
 
     def get_allowed_moves(self, person_pos):
         free_directions = []
@@ -86,7 +80,7 @@ class Field:
         return new_solvers
 
     @staticmethod
-    def solve_with_solvers(x_field):
+    def solve(x_field):
         iteration = 1
         new_solvers = set()
         while True:
@@ -110,4 +104,4 @@ if __name__ == '__main__':
         for round in range(case_number):
             car_positions = [int(pos) for pos in f.readline().split()]
             field = Field(car_positions)
-            print(Field.solve_with_solvers(field), end=' ')
+            print(Field.solve(field), end=' ')
