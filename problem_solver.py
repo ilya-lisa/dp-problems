@@ -25,7 +25,7 @@ class Solver:
         return hash(self.__repr__())
 
     def __repr__(self):
-        return "Solver(%s, %s)" % (self.direction, self.person_pos)
+        return "Solver({0}, {1})".format(self.direction, self.person_pos)
 
 
 class Field:
@@ -60,7 +60,7 @@ class Field:
 
     def is_hit_on_next(self, road_number):
         return (road_number < 0) or (
-            road_number < Field.NUMBER_OF_ROADS and (self.roads[road_number] - Field.speed_of(road_number) <= 0))
+            road_number < Field.NUMBER_OF_ROADS and (self.roads[road_number] >= 0 and self.roads[road_number] - Field.speed_of(road_number) <= 0))
 
     @staticmethod
     def speed_of(road_number):
@@ -82,7 +82,7 @@ class Field:
     @staticmethod
     def solve_with_solvers(x_field):
         new_solvers = set()
-        iteration = 0
+        iteration = 1
         while True:
             x_field.make_a_move()
             for solver in x_field.solvers:
